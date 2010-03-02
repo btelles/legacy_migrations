@@ -11,6 +11,7 @@ end
 require 'legacy_migrations'
 
 describe LegacyMigrations do
+  require 'ruby-debug'
   describe 'transfer_from' do
     it "transfers attributes, given the two names" do
       Person.create(:name => 'my first name')
@@ -29,8 +30,8 @@ describe LegacyMigrations do
     it "transfers attributes, given a block" do
       Person.create(:name => 'my first name')
       transfer_from Person, :to => Animal do
-        from :name, :to => :first_name do |first_name|
-          first_name.upcase
+        from :name, :to => :first_name do |name|
+          name.upcase
         end
       end
       Animal.first.first_name.should == 'MY FIRST NAME'

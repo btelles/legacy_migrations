@@ -2,7 +2,12 @@ module LegacyMigrations
   module Transformations
     def from(from_attribute, *args)
       options = args.extract_options!
-      @columns.merge!( {options[:to] => from_attribute} )
+      if block_given?
+        custom_method = Proc.new {|record| yield(record.send(from_attribute))}
+        @columns.merge!({options[:to] => custom_method})
+      else
+        @columns.merge!( {options[:to] => from_attribute} )
+      end
     end
 
     def match_same_name_attributes
