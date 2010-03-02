@@ -13,6 +13,16 @@ require 'legacy_migrations'
 describe LegacyMigrations do
   require 'ruby-debug'
   describe 'transfer_from' do
+    it "accepts a limit to the number of transfers to conduct" do
+      3.times {|a| Person.create(:name => 'my first name'+a.to_s) }
+
+      transfer_from Person, :to => Animal, :limit => 2 do
+        match_same_name_attributes
+      end
+      Animal.all.count.should == 2
+    end
+  end
+  describe 'from' do
     it "transfers attributes, given the two names" do
       Person.create(:name => 'my first name')
       transfer_from Person, :to => Animal do
@@ -30,7 +40,6 @@ describe LegacyMigrations do
       Animal.first.first_name.should == 'MY FIRST NAME'
 
     end
-
     describe "match_same_name_attributes" do
       it "transfers same-name attributes" do
         Person.create(:name => 'same name')
