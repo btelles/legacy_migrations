@@ -9,17 +9,14 @@ structure to another. Here's a simple example:
     from :name, :to => :pet_name
   end
 
-  run
-
-
 This transfers data from the people table to the animals table,
 mapping the people's _name_ column to animals' _pet\_name_ column.
 
 But that's just the beginning. This plugin also:
 
-* Reports invalid data import attempts for easy data cleanup (currently not implemented)
-  (just use ActiveRecord validations, and after running the script from
-  the command line, and the output will give you helpful details about validation errors.)
+* Reports invalid data by using your application's own validation errors for easy data cleanup
+  (just use ActiveRecord validations and after running the script from
+  the command line, the output will give you helpful details about validation errors.)
 * Maps foreign keys between the databases (currently not implemented)
 * Gives you a bunch of options for mapping fields between tables.
 
@@ -31,8 +28,9 @@ In some file in your rails app (perhaps db/seeds.rb?)
 
   transfer_from Person, :to => Animal do
     from :name, :to => :pet_name
-    from :sex, :to => :gender
-    ...
+    from :sex, :to => :gender do |sex|
+      sex == 'm' ? 'male' : 'female'
+    end
   end
 
 
