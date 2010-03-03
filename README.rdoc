@@ -22,8 +22,6 @@ But that's just the beginning. This plugin also:
   the command line, and the output will give you helpful details about validation errors.)
 * Maps foreign keys between the databases (currently not implemented)
 * Gives you a bunch of options for mapping fields between tables.
-*
-
 
 == Example
 
