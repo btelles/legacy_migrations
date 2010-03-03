@@ -17,18 +17,17 @@ mapping the people's _name_ column to animals' _pet\_name_ column.
 
 But that's just the beginning. This plugin also:
 
-  * Reports invalid data import attempts for easy data cleanup (currently not implemented)
-    (just use ActiveRecord validations, and after running the script from
-     the command line, and the output will give you helpful details about validation errors.)
-  * Maps foreign keys between the databases (currently not implemented)
-  * Gives you a bunch of options for mapping fields between tables.
-  *
+* Reports invalid data import attempts for easy data cleanup (currently not implemented)
+  (just use ActiveRecord validations, and after running the script from
+   the command line, and the output will give you helpful details about validation errors.)
+* Maps foreign keys between the databases (currently not implemented)
+* Gives you a bunch of options for mapping fields between tables.
+*
 
 
-Example
-=======
+== Example
 
-  #In some file in your rails app (perhaps db/seeds.rb?)
+In some file in your rails app (perhaps db/seeds.rb?)
 
   require 'legacy_migrations'
 
@@ -39,7 +38,7 @@ Example
   end
 
 
-  #OR, copy all columns with the same name
+OR, copy all columns with the same name
 
   transfer_from Person, :to => Animal do
     match_same_name_attributes
