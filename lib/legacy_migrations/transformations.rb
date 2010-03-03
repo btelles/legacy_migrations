@@ -7,19 +7,36 @@ module LegacyMigrations
     # ==== Options
     #
     # * <tt>:to</tt> - (Required) Column in destination table to fill in with value in 'from'
-    # * <tt>&block</tt> - if passed a block, the block uses the value in the 'from_attribute'
+    # * <tt>:if</tt> - specify a function that takes one parameter (the source table's RECORD)
+    #   and returns true or false. The assignment is only made if the function returns a
+    #   non-false value.
+    # * <tt>&block</tt> - if passed a block, the block takes one parameter,
+    #   which is the value of the attribute in the _from_ parameter, then inserts the result of
+    #   the block into the destination attribute.
     #   parameter and inserts the result of the block in the provided 'to' column.
     def from(from_attribute, *args)
       options = args.extract_options!
-      if block_given?
 
-        #anyone want to give this a try in another language? ;-)
-        custom_method = Proc.new {|record| yield(record.send(from_attribute))}
-
-        @columns.merge!({options[:to] => custom_method})
+      if options[:if]
+        if_method = Proc.new {|record| send(options[:if], record)}
       else
-        @columns.merge!( {options[:to] => from_attribute} )
+        if_method = Proc.new {|record| true }
       end
+      #anyone want to give this a try in another language? ;-)
+      custom_method = Proc.new {|record| 
+        if if_method.call(record)
+          if block_given?
+            yield(record.send(from_attribute))
+          else
+            record.send(from_attribute)
+          end
+        else
+          nil
+        end
+
+      }
+
+      @columns.merge!({options[:to] => custom_method})
     end
 
     # Shortcut for transferring data between similar tables. 

@@ -38,7 +38,16 @@ describe LegacyMigrations do
         end
       end
       Animal.first.first_name.should == 'MY FIRST NAME'
-
+    end
+    it 'allows user to specify an :if function' do
+      def function_returning_false(from_record); false; end
+      Person.create(:name => 'my first name')
+      transfer_from Person, :to => Animal do
+        from :name, :to => :first_name, :if => :function_returning_false
+        from :name, :to => :name
+      end
+      Animal.first.first_name.should == nil
+      Animal.first.name.should == 'my first name'
     end
     describe "match_same_name_attributes" do
       it "transfers same-name attributes" do
