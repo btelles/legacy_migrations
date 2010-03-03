@@ -19,7 +19,7 @@ But that's just the beginning. This plugin also:
 
 * Reports invalid data import attempts for easy data cleanup (currently not implemented)
   (just use ActiveRecord validations, and after running the script from
-   the command line, and the output will give you helpful details about validation errors.)
+  the command line, and the output will give you helpful details about validation errors.)
 * Maps foreign keys between the databases (currently not implemented)
 * Gives you a bunch of options for mapping fields between tables.
 *
