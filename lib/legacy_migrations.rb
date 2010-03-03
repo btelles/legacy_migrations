@@ -13,7 +13,7 @@ module LegacyMigrations
   def transfer_from(from_table, *args, &block)
     @columns = {}
 
-    options = args.extract_options!
+    options = {:validate => true}.merge(args.extract_options!)
 
     @from_table = from_table
     @to_table = options[:to]
@@ -26,10 +26,16 @@ module LegacyMigrations
         result
       end
       new_record = @to_table.new(columns)
-      new_record.save
+      
+      if options[:validate]
+        report_validation_errors(new_record, from_record)
+      else
+        new_record.save(false)
+      end
     end
   end
 
 end
 include LegacyMigrations
 include LegacyMigrations::Transformations
+include LegacyMigrations::ValidationHelper

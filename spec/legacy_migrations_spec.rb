@@ -5,6 +5,7 @@ class Person < ActiveRecord::Base
 end
 
 class Animal < ActiveRecord::Base
+  validates_format_of :name, :with => /^(\D)*$/, :allow_nil => true
   #name
   #first_name
 end
@@ -14,12 +15,26 @@ describe LegacyMigrations do
   require 'ruby-debug'
   describe 'transfer_from' do
     it "accepts a limit to the number of transfers to conduct" do
-      3.times {|a| Person.create(:name => 'my first name'+a.to_s) }
+      3.times {|a| Person.create(:name => 'my first name') }
 
       transfer_from Person, :to => Animal, :limit => 2 do
         match_same_name_attributes
       end
       Animal.all.count.should == 2
+    end
+    it "validates by default" do
+      Person.create(:name => 'aoeu 9')
+      transfer_from Person, :to => Animal do
+        match_same_name_attributes
+      end
+      puts Animal.all.count.should == 0
+    end
+    it "bypasses validation when the option is set" do
+      Person.create(:name => 'aoeu 9')
+      transfer_from Person, :to => Animal, :validate => false do
+        match_same_name_attributes
+      end
+      puts Animal.all.count.should == 1
     end
   end
   describe 'from' do
