@@ -1,4 +1,5 @@
 require 'legacy_migrations/transformations'
+require 'legacy_migrations/squirrel'
 module LegacyMigrations
 
   # Define a source and destination table to transfer data
