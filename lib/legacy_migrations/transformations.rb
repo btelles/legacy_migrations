@@ -26,9 +26,9 @@ module LegacyMigrations
       custom_method = Proc.new {|record| 
         if if_method.call(record)
           if block_given?
-            yield(record.send(from_attribute))
+            yield(record.send(:[], from_attribute.to_s))
           else
-            record.send(from_attribute)
+            record.send(:[], from_attribute.to_s)
           end
         else
           nil

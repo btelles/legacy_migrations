@@ -1,16 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper.rb'))
 
-class Person < ActiveRecord::Base
-  #name
-end
-
-class Animal < ActiveRecord::Base
-  validates_format_of :name, :with => /^(\D)*$/, :allow_nil => true
-  #name
-  #first_name
-end
-require 'legacy_migrations'
-
 describe LegacyMigrations do
   require 'ruby-debug'
   describe 'transfer_from' do
@@ -27,69 +16,45 @@ describe LegacyMigrations do
       transfer_from Person, :to => Animal do
         match_same_name_attributes
       end
-      puts Animal.all.count.should == 0
+      Animal.all.count.should == 0
     end
     it "bypasses validation when the option is set" do
       Person.create(:name => 'aoeu 9')
       transfer_from Person, :to => Animal, :validate => false do
         match_same_name_attributes
       end
-      puts Animal.all.count.should == 1
+      Animal.all.count.should == 1
+    end
+    it "accepts a CSV file" do
+      person = "a simple name,age\nalbert,123"
+      person_csv = FasterCSV.parse(person, :headers => :first_row)
+      transfer_from person_csv, :to => Animal, :source_type => :csv do
+        from 'a simple name', :to => :name
+      end
+      Animal.first.name.should == 'albert'
+    end
+    it "limits a CSV file" do
+      person = "a simple name,age\nalbert,123\nsmith,54"
+      person_csv = FasterCSV.parse(person, :headers => :first_row)
+      transfer_from person_csv, :to => Animal, :source_type => :csv, :limit => 1 do
+        from 'a simple name', :to => :name
+      end
+      Animal.all.count.should == 1
     end
   end
-  describe 'from' do
-    it "transfers attributes, given the two names" do
-      Person.create(:name => 'my first name')
-      transfer_from Person, :to => Animal do
-        from :name, :to => :first_name
-      end
-      Animal.first.first_name.should == 'my first name'
-    end
-    it "transfers attributes, given a block" do
-      Person.create(:name => 'my first name')
-      transfer_from Person, :to => Animal do
-        from :name, :to => :first_name do |name|
-          name.upcase
+  describe 'update_from' do
+    it "updates with simple column matching" do
+      Person.create(:name => 'smithers', :age => 4)
+      Animal.create(:name => 'smithers')
+      update_from Person, :to => Animal do
+
+        based_on do |from|
+          name == from.name
         end
+
+        from :age, :to => :age
       end
-      Animal.first.first_name.should == 'MY FIRST NAME'
-    end
-    it 'allows user to specify an :if function' do
-      def function_returning_false(from_record); false; end
-      Person.create(:name => 'my first name')
-      transfer_from Person, :to => Animal do
-        from :name, :to => :first_name, :if => :function_returning_false
-        from :name, :to => :name
-      end
-      Animal.first.first_name.should == nil
-      Animal.first.name.should == 'my first name'
-    end
-    describe "match_same_name_attributes" do
-      it "transfers same-name attributes" do
-        Person.create(:name => 'same name')
-        transfer_from Person, :to => Animal do
-          match_same_name_attributes
-        end
-        Animal.first.name.should == 'same name'
-      end
-      it "lets the user select all attributes EXCEPT a few for transfer" do
-        Person.create(:name => 'choose_me', :not_name => 'not_this_one')
-        transfer_from Person, :to => Animal do
-          match_same_name_attributes :except => [:name]
-        end
-        animal = Animal.first
-        animal.name.should == 'choose_me'
-        animal.not_name.should == nil
-      end
-      it "lets the user select only some attributes for transfer" do
-        Person.create(:name => 'only', :not_name => 'not_this')
-        transfer_from Person, :to => Animal do
-          match_same_name_attributes :only => [:name]
-        end
-        animal = Animal.first
-        animal.name.should == 'only'
-        animal.not_name.should == nil
-      end
+      Animal.find_by_name('smithers').age.should == 4
     end
   end
 end
