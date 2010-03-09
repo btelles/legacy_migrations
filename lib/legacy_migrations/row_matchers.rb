@@ -18,18 +18,15 @@ module LegacyMigrations
     #
     # The above says that if we have a destination row 
     # whose name attribute matches a source (from) row's name,
-    # and the destination row has an age > 17, then execute the
-    # update.
+    # and the destination row has an age > 17, then assume the
+    # source row and destination row are the same record, and update
+    # the destination row with the source row's data
     #
     # See the thoughtbot documentation for more details 
     # about the squirrel syntax at:
     # http://github.com/thoughtbot/squirrel/
     def based_on(&block)
-      @based_on = Proc.new {|from|
-        @to_table.find(:all) do
-          yield(from)
-        end
-      }
+      @conditions = Proc.new {|from| yield(from) }
     end
   end
 end

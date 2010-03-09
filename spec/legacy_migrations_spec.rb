@@ -52,9 +52,28 @@ describe LegacyMigrations do
           name == from.name
         end
 
+        from :name, :to => :name
         from :age, :to => :age
       end
       Animal.find_by_name('smithers').age.should == 4
+      Animal.all.count.should == 1
+    end
+    it "inserts if a matching record does not exist" do
+      Person.create(:name => 'smithers', :age => 4)
+      Person.create(:name => 'simpson', :age => 8)
+      Animal.create(:name => 'simpson')
+      update_from Person, :to => Animal do
+
+        based_on do |from|
+          name == from.name
+        end
+
+        from :name, :to => :name
+        from :age, :to => :age
+      end
+      Animal.find_by_name('smithers').age.should == 4
+      Animal.find_by_name('simpson').age.should == 8
+      Animal.all.count.should == 2
     end
   end
 end

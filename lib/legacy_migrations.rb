@@ -26,17 +26,7 @@ module LegacyMigrations
     configure_transfer(from_table, *args) { yield }
 
     source_iterator(@limit, @type).each do |from_record|
-      columns = @columns.inject({}) do |result, attributes|
-        result[attributes[0]]= attributes[1].call(from_record)
-        result
-      end
-      new_record = @to_table.new(columns)
-
-      if @options[:validate]
-        report_validation_errors(new_record, from_record)
-      else
-        new_record.save(false)
-      end
+      new_destination_record(from_record)
     end
   end
 
@@ -45,7 +35,10 @@ module LegacyMigrations
     configure_transfer(from_table, *args) { yield }
 
     source_iterator(@limit, @type).each do |from_record|
-      matching_records = @based_on.call(from_record)
+      matching_records = @to_table.find(:all) do
+        @conditions.call(from_record)
+      end 
+      #debugger if from_record.name == 'smithers'
       unless matching_records.empty?
         matching_records.each do |to_record|
           @columns.each do |to, from|
@@ -58,6 +51,8 @@ module LegacyMigrations
             to_record.save(false)
           end
         end
+      else
+        new_destination_record(from_record)
       end
     end
   end
@@ -78,6 +73,19 @@ module LegacyMigrations
     @type  = @options[:source_type] ? @options[:source_type] : :active_record
   end
 
+  def new_destination_record(from_record)
+      columns = @columns.inject({}) do |result, attributes|
+        result[attributes[0]]= attributes[1].call(from_record)
+        result
+      end
+      new_record = @to_table.new(columns)
+
+      if @options[:validate]
+        report_validation_errors(new_record, from_record)
+      else
+        new_record.save(false)
+      end
+  end
 end
 include LegacyMigrations
 include LegacyMigrations::Transformations
