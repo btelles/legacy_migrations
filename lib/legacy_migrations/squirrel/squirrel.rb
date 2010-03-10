@@ -87,6 +87,7 @@ module LegacyMigrations
         else
           opts = args.last.is_a?(Hash) ? args.last : {}
           results = []
+
           pagination = opts.delete(:paginate) || {}
           model.send(:with_scope, :find => opts) do
             @conditions.paginate(pagination) unless pagination.empty?
@@ -98,7 +99,7 @@ module LegacyMigrations
           results
         end
       end
-   
+
       def to_find_parameters
         find_parameters = {}
         find_parameters[:conditions] = to_find_conditions unless to_find_conditions.blank?

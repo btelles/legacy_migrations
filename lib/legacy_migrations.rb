@@ -35,9 +35,8 @@ module LegacyMigrations
     configure_transfer(from_table, *args) { yield }
 
     source_iterator(@limit, @type).each do |from_record|
-      matching_records = @to_table.find(:all) do
-        @conditions.call(from_record)
-      end 
+      matching_records = @conditions.call(from_record)
+
       #debugger if from_record.name == 'smithers'
       unless matching_records.empty?
         matching_records.each do |to_record|

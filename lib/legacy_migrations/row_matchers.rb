@@ -26,7 +26,13 @@ module LegacyMigrations
     # about the squirrel syntax at:
     # http://github.com/thoughtbot/squirrel/
     def based_on(&block)
-      @conditions = Proc.new {|from| yield(from) }
+      @conditions = Proc.new {|from| 
+        @from = from
+        @to_table.find(:all) do
+          from = @from
+          yield(from)
+        end
+      }
     end
   end
 end
