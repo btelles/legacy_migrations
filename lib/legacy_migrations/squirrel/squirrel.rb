@@ -187,7 +187,7 @@ module LegacyMigrations
         # of the columns and associations in the specified model. Note that you CANNOT use
         # user-defined methods on your model inside Squirrel queries. They don't have any meaning
         # in the context of a database query.
-        def initialize model, logical_join, binding, from_record, path = nil, reflection = nil, &blk
+        def initialize model, logical_join, binding, from_record = nil, path = nil, reflection = nil, &blk
           @model = model
           @from = from_record
           @logical_join = logical_join
@@ -239,19 +239,19 @@ module LegacyMigrations
         def association name, &blk
           name = name.to_s.intern
           ref = @model.reflect_on_association(name)
-          @condition_blocks << ConditionGroup.new(ref.klass, logical_join, binding, path, ref.name, &blk)
+          @condition_blocks << ConditionGroup.new(ref.klass, logical_join, binding, @from, path, ref.name, &blk)
           @condition_blocks.last
         end
    
         # Creates a ConditionGroup that has the logical_join set to "OR".
         def any &blk
-          @condition_blocks << ConditionGroup.new(model, "OR", binding, path, &blk)
+          @condition_blocks << ConditionGroup.new(model, "OR", binding, @from, path, &blk)
           @condition_blocks.last
         end
    
         # Creates a ConditionGroup that has the logical_join set to "AND".
         def all &blk
-          @condition_blocks << ConditionGroup.new(model, "AND", binding, path, &blk)
+          @condition_blocks << ConditionGroup.new(model, "AND", binding, @from, path, &blk)
           @condition_blocks.last
         end
         
