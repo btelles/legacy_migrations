@@ -59,7 +59,7 @@ module LegacyMigrations
    
       # Creates a Query specific to the given model (which is a class that descends from AR::Base)
       # and a block that will be run to find the conditions for the #find call.
-      def initialize model, from_record, &blk
+      def initialize model, from_record = nil, &blk
         @model = model
         @joins = nil
         @from = from_record
