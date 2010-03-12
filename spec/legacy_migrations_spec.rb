@@ -48,8 +48,8 @@ describe LegacyMigrations do
       Animal.create(:name => 'smithers')
       update_from Person, :to => Animal do
 
-        based_on do |from|
-          name == @from.name
+        based_on do 
+          name == from.name
         end
 
         from :name, :to => :name
@@ -64,14 +64,13 @@ describe LegacyMigrations do
       Animal.create(:name => 'simpson')
       update_from Person, :to => Animal do
 
-        based_on do |from|
-          name == @from.name
+        based_on do
+          name == from.name
         end
 
         from :name, :to => :name
         from :age, :to => :age
       end
-      debugger
       Animal.find_by_name('smithers').age.should == 4
       Animal.find_by_name('simpson').age.should == 8
       Animal.all.count.should == 2

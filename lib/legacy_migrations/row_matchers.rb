@@ -25,13 +25,12 @@ module LegacyMigrations
     # See the thoughtbot documentation for more details 
     # about the squirrel syntax at:
     # http://github.com/thoughtbot/squirrel/
-    def based_on(&block)
+    def based_on(&blk)
+      @blck = blk
       @conditions = Proc.new {|from| 
         @from = from
-        @to_table.find(:all) do
-          from = @from
-          yield(from)
-        end
+        query = LegacyMigrations::Squirrel::Query.new(@to_table, from, &@blck)
+        query.execute(:all)
       }
     end
   end

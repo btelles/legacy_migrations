@@ -59,11 +59,12 @@ module LegacyMigrations
    
       # Creates a Query specific to the given model (which is a class that descends from AR::Base)
       # and a block that will be run to find the conditions for the #find call.
-      def initialize model, &blk
+      def initialize model, from_record, &blk
         @model = model
         @joins = nil
+        @from = from_record
         @binding = blk && blk.binding
-        @conditions = ConditionGroup.new(@model, "AND", @binding, &blk)
+        @conditions = ConditionGroup.new(@model, "AND", @binding, @from, &blk)
         @conditions.assign_joins( join_dependency )
       end
       
@@ -98,6 +99,10 @@ module LegacyMigrations
           end
           results
         end
+      end
+
+      def from
+        @from
       end
 
       def to_find_parameters
@@ -182,8 +187,9 @@ module LegacyMigrations
         # of the columns and associations in the specified model. Note that you CANNOT use
         # user-defined methods on your model inside Squirrel queries. They don't have any meaning
         # in the context of a database query.
-        def initialize model, logical_join, binding, path = nil, reflection = nil, &blk
+        def initialize model, logical_join, binding, from_record, path = nil, reflection = nil, &blk
           @model = model
+          @from = from_record
           @logical_join = logical_join
           @conditions = []
           @condition_blocks = []
@@ -212,6 +218,10 @@ module LegacyMigrations
           end
    
           execute_block
+        end
+       
+        def from
+          @from
         end
    
         # Creates a Condition and queues it for inclusion. When calling a method defined
