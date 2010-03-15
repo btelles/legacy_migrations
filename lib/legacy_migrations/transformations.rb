@@ -14,6 +14,9 @@ module LegacyMigrations
     #   which is the value of the attribute in the _from_ parameter, then inserts the result of
     #   the block into the destination attribute.
     #   parameter and inserts the result of the block in the provided 'to' column.
+    # * <tt>:from_record</tt> - If you set the "from" column to "from_record",
+    #   the variable passed into the block will be the entire from record,
+    #   instead of just one of its columns
     def from(from_attribute, *args)
       options = args.extract_options!
 
@@ -25,7 +28,10 @@ module LegacyMigrations
       #anyone want to give this a try in another language? ;-)
       custom_method = Proc.new {|record| 
         if if_method.call(record)
-          if block_given?
+          case
+          when block_given? && from_attribute == :from_record
+            yield(record)
+          when block_given?
             yield(record.send(:[], from_attribute.to_s))
           else
             record.send(:[], from_attribute.to_s)
