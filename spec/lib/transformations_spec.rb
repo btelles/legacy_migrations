@@ -28,6 +28,16 @@ describe "transformations" do
       Animal.first.first_name.should == nil
       Animal.first.name.should == 'my first name'
     end
+    it "allows user to use 'from_record' instead of column" do
+      Person.create(:name => 'my first name')
+      transfer_from Person, :to => Animal do
+        from :from_record, :to => :first_name do |from_record|
+          from_record.name.upcase
+        end
+      end
+      Animal.first.first_name.should == 'MY FIRST NAME'
+
+    end
     describe "match_same_name_attributes" do
       it "transfers same-name attributes" do
         Person.create(:name => 'same name')
