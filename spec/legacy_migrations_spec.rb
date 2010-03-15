@@ -41,6 +41,31 @@ describe LegacyMigrations do
       end
       Animal.all.count.should == 1
     end
+    it "rewinds an activerecord source" do
+      Person.create(:name => 'aoeu')
+      transfer_from Person, :to => Animal do
+        from :name, :to => :name
+      end
+      transfer_from Person, :to => Animal do
+        from :name, :to => :first_name
+      end
+      Animal.all.count.should == 2
+      Animal.find_by_name('aoeu').should be_instance_of(Animal)
+      Animal.find_by_first_name('aoeu').should be_instance_of(Animal)
+    end
+    it "rewinds a CSV source" do
+      person = "name,age\nalbert,123\nsmith,54"
+      person_csv = FasterCSV.parse(person, :headers => :first_row)
+      transfer_from person_csv, :to => Animal, :source_type => :csv do
+        from :name, :to => :name
+      end
+      transfer_from person_csv, :to => Animal, :source_type => :csv do
+        from :name, :to => :first_name
+      end
+      Animal.all.count.should == 4
+      Animal.find_by_name('albert').should be_instance_of(Animal)
+      Animal.find_by_first_name('albert').should be_instance_of(Animal)
+    end
   end
   describe 'update_from' do
     it "updates with simple column matching" do
