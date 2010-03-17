@@ -80,6 +80,21 @@ describe LegacyMigrations do
       a.operations.size == 2
       a.operations[1].type == 'update'
     end
+    it "retrieves a specified operation's results" do
+      Person.create(:name => 'aoeu')
+      transfer_from Person, :to => Animal do
+        from :name, :to => :name
+      end
+      a = update_from Person, :to => Animal do
+        based_on do
+          name == from.name
+        end
+        from :name, :to => :name
+      end
+     update_op = a.operation_with(:destination => Animal, :type => 'update')
+     update_op.should be_instance_of Operation
+     update_op.source.should == Person
+    end
 
     it "records all changes by default" do
       Person.create(:name => 'aoeu')

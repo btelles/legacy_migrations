@@ -27,7 +27,7 @@ module LegacyMigrations
       @operations ||= []
       @operations.select do |operation|
         result = true
-        args.each do |property, value|
+        args.last.each do |property, value|
           result = false unless operation.send(property) == value
         end
         result
