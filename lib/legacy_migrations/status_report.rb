@@ -25,7 +25,7 @@ module LegacyMigrations
 
     def operation_with(*args)
       @operations ||= []
-      @operations.first do |operation|
+      @operations.select do |operation|
         result = true
         args.each do |property, value|
           result = false unless operation.send(property) == value
