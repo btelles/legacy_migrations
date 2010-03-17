@@ -36,7 +36,6 @@ describe "transformations" do
         end
       end
       Animal.first.first_name.should == 'MY FIRST NAME'
-
     end
     describe "match_same_name_attributes" do
       it "transfers same-name attributes" do

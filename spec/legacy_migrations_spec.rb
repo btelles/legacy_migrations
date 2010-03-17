@@ -66,6 +66,31 @@ describe LegacyMigrations do
       Animal.find_by_name('albert').should be_instance_of(Animal)
       Animal.find_by_first_name('albert').should be_instance_of(Animal)
     end
+    it "always returns a full status report" do
+      Person.create(:name => 'aoeu')
+      transfer_from Person, :to => Animal do
+        from :name, :to => :name
+      end
+      a = update_from Person, :to => Animal do
+        based_on do
+          name == from.name
+        end
+        from :name, :to => :name
+      end
+      a.operations.size == 2
+      a.operations[1].type == 'update'
+    end
+
+    it "records all changes by default" do
+      Person.create(:name => 'aoeu')
+      a = transfer_from Person, :to => Animal do
+        from :name, :to => :name
+      end
+      operation = a.operations.last
+      operation.inserts.size.should == 1
+      operation.inserts[0].should be_instance_of Animal
+      operation.description.should == "Transfer of data from People to Animals resulted in 1 insert and 0 updates."
+    end
   end
   describe 'update_from' do
     it "updates with simple column matching" do

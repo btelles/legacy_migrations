@@ -24,20 +24,29 @@ module LegacyMigrations
   def transfer_from(from_table, *args, &block)
 
     configure_transfer(from_table, *args) { yield }
+    @current_operation = StatusReport.instance.add_operation :source => @from_table,
+                                        :destination => @to_table,
+                                        :source_type => args.extract_options![:source_type] || :active_record,
+                                        :type => 'transfer'
+
 
     source_iterator(@limit, @type).each do |from_record|
       new_destination_record(from_record)
     end
+    @status_report
   end
 
   def update_from(from_table, *args, &block)
 
     configure_transfer(from_table, *args) { yield }
 
+    @current_operation = StatusReport.instance.add_operation :source => @from_table,
+                                        :destination => @to_table,
+                                        :source_type => args.extract_options![:source_type] || :active_record,
+                                        :type => 'update'
     source_iterator(@limit, @type).each do |from_record|
       matching_records = @conditions.call(from_record)
 
-      #debugger if from_record.name == 'smithers'
       unless matching_records.empty?
         matching_records.each do |to_record|
           @columns.each do |to, from|
@@ -45,15 +54,17 @@ module LegacyMigrations
           end
 
           if @options[:validate]
-            report_validation_errors(to_record, from_record)
+            report_validation_errors(to_record, from_record, 'update')
           else
             to_record.save(false)
+            @current_operation.record_update(to_record)
           end
         end
       else
         new_destination_record(from_record)
       end
     end
+    @status_report
   end
 
   private
@@ -65,6 +76,7 @@ module LegacyMigrations
 
     @from_table = from_table
     @to_table = @options[:to]
+    @status_report = StatusReport.instance
 
     yield
 
@@ -80,15 +92,23 @@ module LegacyMigrations
       new_record = @to_table.new(columns)
 
       if @options[:validate]
-        report_validation_errors(new_record, from_record)
+        report_validation_errors(new_record, from_record, 'insert')
       else
         new_record.save(false)
+        @current_operation.record_insert(new_record)
       end
+  end
+
+  def report_validation_errors(new_record, from_record, type = 'insert')
+    if new_record.save
+      @current_operation.send("record_#{type}", new_record)
+    else
+      puts @current_operation.add_validation_error(new_record, from_record).pretty_output
+    end
   end
 end
 include LegacyMigrations
 include LegacyMigrations::Transformations
-include LegacyMigrations::ValidationHelper
 include LegacyMigrations::SourceIterators
 include LegacyMigrations::RowMatchers
 
