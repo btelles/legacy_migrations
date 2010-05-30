@@ -1,6 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper.rb'))
 
 describe "transformations" do
+  require 'ruby-debug'
   describe 'from' do
     it "transfers attributes, given the two names" do
       Person.create(:name => 'my first name')
@@ -62,6 +63,22 @@ describe "transformations" do
         animal = Animal.first
         animal.name.should == 'only'
         animal.not_name.should == nil
+      end
+    end
+    describe "store_as" do
+      it "stores a given row for future reference by another transfer or update function" do
+        Person.create(:name => 'choose_me', :not_name => 'not_this_one', :city => 'tally')
+        transfer_from Person, :to => City, :store_as => 'my_city' do
+          from :city, :to => :name
+        end
+        transfer_from Person, :to => Animal do
+          match_same_name_attributes
+          stored :my_city, :to => :city
+        end
+
+        animal = Animal.first
+        debugger
+        animal.city.name.should == 'tally'
       end
     end
   end

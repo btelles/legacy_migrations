@@ -12,7 +12,7 @@ module LegacyMigrations
             rows_processed += 1
             break if rows_processed == limit[:limit].to_i
           end
-          FasterCSV::Table.new(fewer_rows)
+          CSV::Table.new(fewer_rows)
         else
           @from_table
         end

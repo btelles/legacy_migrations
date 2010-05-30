@@ -1,4 +1,5 @@
 require 'legacy_migrations/transformations'
+require 'legacy_migrations/future_storage'
 require 'legacy_migrations/squirrel'
 module LegacyMigrations
 
@@ -59,6 +60,7 @@ module LegacyMigrations
             to_record.save(false)
             @current_operation.record_update(to_record)
           end
+          store_as(to_record, from_record)
         end
       else
         new_destination_record(from_record)
@@ -68,20 +70,33 @@ module LegacyMigrations
   end
 
   private
-  
+
   def configure_transfer(from_table, *args, &block)
     @columns = {}
 
     @options = {:validate => true}.merge(args.extract_options!)
 
+
     @from_table = from_table
     @to_table = @options[:to]
+
+    add_storage_attribute if @options[:store_as].present?
+
     @status_report = StatusReport.instance
 
     yield
 
-    @limit = @options[:limit] ? {:limit, @options[:limit]} : {}
+    @limit = @options[:limit] ? {:limit => @options[:limit]} : {}
     @type  = @options[:source_type] ? @options[:source_type] : :active_record
+  end
+
+  def add_storage_attribute
+    symbol_attr = @options[:store_as].to_sym
+    @from_table.first.class.class_eval do
+      define_method(symbol_attr) do
+        FutureStorage.instance[self.class.to_s][self.id][symbol_attr]
+      end
+    end
   end
 
   def new_destination_record(from_record)
@@ -97,6 +112,16 @@ module LegacyMigrations
         new_record.save(false)
         @current_operation.record_insert(new_record)
       end
+      store_as(new_record, from_record)
+  end
+
+  def store_as(new_record, from_record)
+    if @options[:store_as].present?
+      @future_storage = FutureStorage.instance
+      @future_storage[@from_table.to_s] ||= {}
+      @future_storage[@from_table.to_s][from_record.id] ||= {}
+      @future_storage[@from_table.to_s][from_record.id].merge!({@options[:store_as].to_sym => new_record})
+    end
   end
 
   def report_validation_errors(new_record, from_record, type = 'insert')
@@ -106,6 +131,7 @@ module LegacyMigrations
       puts @current_operation.add_validation_error(new_record, from_record).pretty_output
     end
   end
+
 end
 include LegacyMigrations
 include LegacyMigrations::Transformations

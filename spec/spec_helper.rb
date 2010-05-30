@@ -11,7 +11,7 @@ $:.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 plugin_spec_dir = File.dirname(__FILE__)
 
 load(File.join(plugin_spec_dir, "db", "schema.rb"))
-require 'fastercsv'
+require 'csv'
 require 'models'
 
   # == Fixtures
