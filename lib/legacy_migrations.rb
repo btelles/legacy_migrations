@@ -25,14 +25,15 @@ module LegacyMigrations
   #   that is retrievable in other transformations
   #
   #   _Example_
+  #   <tt>
+  #   transfer_from Mammal, :to => Species, :store_as => 'new_animal' do
+  #     match_same_name_attributes
+  #   end
   #
-  #     transfer_from Mammal, :to => Species, :store_as => 'new_animal' do
-  #       match_same_name_attributes
-  #     end
-  #
-  #     transfer_from Person, :to => Animal do
-  #       stored 'new_animal', :to => :species
-  #     end
+  #   transfer_from Person, :to => Animal do
+  #     stored 'new_animal', :to => :species
+  #   end
+  #   </tt>
   #   
   def transfer_from(from_table, *args, &block)
 
