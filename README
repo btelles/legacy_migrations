@@ -40,5 +40,8 @@ OR, copy all columns with the same name
     match_same_name_attributes
   end
 
+Here's a slightly more thorough blog post about it:
+
+http://frontended.com/?p=89
 
 Copyright (c) 2010 Bernie Telles, released under the MIT license
