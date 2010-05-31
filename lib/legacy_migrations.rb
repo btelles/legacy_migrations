@@ -21,6 +21,18 @@ module LegacyMigrations
   #   table by using *From*.all.each...
   #   _:other_: Assumes the From option is an iterable 'collection' whose 
   #   elements/items can respond to all columns speficied in the given block.
+  # * <tt>:store_as</tt> - Stores the generated destination record as a key
+  #   that is retrievable in other transformations
+  #
+  #   _Example_
+  #
+  #     transfer_from Mammal, :to => Species, :store_as => 'new_animal' do
+  #       match_same_name_attributes
+  #     end
+  #
+  #     transfer_from Person, :to => Animal do
+  #       stored 'new_animal', :to => :species
+  #     end
   #   
   def transfer_from(from_table, *args, &block)
 
