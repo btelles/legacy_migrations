@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{legacy_migrations}
-  s.version = "0.2.0"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bernie Telles"]
-  s.date = %q{2010-03-15}
+  s.date = %q{2010-05-30}
   s.description = %q{Rails plugin for transferring or updating data between two db structures.}
   s.email = %q{bernardo.telles@dms.myflorida.com}
   s.extra_rdoc_files = [
@@ -25,14 +25,15 @@ Gem::Specification.new do |s|
      "install.rb",
      "legacy_migrations.gemspec",
      "lib/legacy_migrations.rb",
+     "lib/legacy_migrations/future_storage.rb",
      "lib/legacy_migrations/row_matchers.rb",
      "lib/legacy_migrations/source_iterators.rb",
      "lib/legacy_migrations/squirrel.rb",
      "lib/legacy_migrations/squirrel/extensions.rb",
      "lib/legacy_migrations/squirrel/paginator.rb",
      "lib/legacy_migrations/squirrel/squirrel.rb",
+     "lib/legacy_migrations/status_report.rb",
      "lib/legacy_migrations/transformations.rb",
-     "lib/legacy_migrations/validation_helper.rb",
      "rails/init.rb",
      "spec/db/schema.rb",
      "spec/db/test.sqlite3",
@@ -46,14 +47,14 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/btelles/legacy_migrations}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Rails plugin for transferring or updating data between two db structures.}
   s.test_files = [
-    "spec/legacy_migrations_spec.rb",
-     "spec/lib/transformations_spec.rb",
+    "spec/lib/transformations_spec.rb",
+     "spec/db/schema.rb",
      "spec/models.rb",
-     "spec/spec_helper.rb",
-     "spec/db/schema.rb"
+     "spec/legacy_migrations_spec.rb",
+     "spec/spec_helper.rb"
   ]
 
   if s.respond_to? :specification_version then
