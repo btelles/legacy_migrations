@@ -77,7 +77,6 @@ describe "transformations" do
         end
 
         animal = Animal.first
-        debugger
         animal.city.name.should == 'tally'
       end
     end
