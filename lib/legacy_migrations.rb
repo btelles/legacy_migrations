@@ -68,6 +68,8 @@ module LegacyMigrations
   #   based_on do
   #     ssn == from.social_security_number
   #   end
+  #
+  #   from :last_name, :to => :last_name
   # end
   # </tt>
   #
