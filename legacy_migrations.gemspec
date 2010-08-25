@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{legacy_migrations}
-  s.version = "0.3.5"
+  s.version = "0.2.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bernie Telles"]
-  s.date = %q{2010-06-12}
+  s.date = %q{2010-08-25}
   s.description = %q{Rails plugin for transferring or updating data between two db structures.}
   s.email = %q{bernardo.telles@dms.myflorida.com}
   s.extra_rdoc_files = [
@@ -50,9 +50,9 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{Rails plugin for transferring or updating data between two db structures.}
   s.test_files = [
-    "spec/lib/transformations_spec.rb",
+    "spec/legacy_migrations_spec.rb",
+     "spec/lib/transformations_spec.rb",
      "spec/models.rb",
-     "spec/legacy_migrations_spec.rb",
      "spec/spec_helper.rb",
      "spec/db/schema.rb"
   ]
