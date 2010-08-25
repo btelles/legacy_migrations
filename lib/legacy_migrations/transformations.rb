@@ -69,6 +69,24 @@ module LegacyMigrations
       end
     end
 
+    def stored(stored_attribute, *args)
+      options = args.extract_options!
+
+      if options[:if]
+        if_method = Proc.new {|record| send(options[:if], record)}
+      else
+        if_method = Proc.new {|record| true }
+      end
+      custom_method = Proc.new {|record| 
+        if if_method.call(record)
+          FutureStorage.instance[@from_table.to_s][record.id][stored_attribute]
+        else
+          nil
+        end
+      }
+      @columns.merge!({options[:to] => custom_method})
+    end
+
     private
 
     def columns_from_options(columns, options)

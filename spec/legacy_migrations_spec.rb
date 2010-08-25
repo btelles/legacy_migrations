@@ -27,7 +27,7 @@ describe LegacyMigrations do
     end
     it "accepts a CSV file" do
       person = "a simple name,age\nalbert,123"
-      person_csv = FasterCSV.parse(person, :headers => :first_row)
+      person_csv = CSV.parse(person, :headers => :first_row)
       transfer_from person_csv, :to => Animal, :source_type => :csv do
         from 'a simple name', :to => :name
       end
@@ -35,7 +35,7 @@ describe LegacyMigrations do
     end
     it "limits a CSV file" do
       person = "a simple name,age\nalbert,123\nsmith,54"
-      person_csv = FasterCSV.parse(person, :headers => :first_row)
+      person_csv = CSV.parse(person, :headers => :first_row)
       transfer_from person_csv, :to => Animal, :source_type => :csv, :limit => 1 do
         from 'a simple name', :to => :name
       end
@@ -55,7 +55,7 @@ describe LegacyMigrations do
     end
     it "rewinds a CSV source" do
       person = "name,age\nalbert,123\nsmith,54"
-      person_csv = FasterCSV.parse(person, :headers => :first_row)
+      person_csv = CSV.parse(person, :headers => :first_row)
       transfer_from person_csv, :to => Animal, :source_type => :csv do
         from :name, :to => :name
       end
