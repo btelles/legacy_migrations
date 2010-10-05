@@ -1,7 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper.rb'))
 
 describe "transformations" do
-  require 'ruby-debug'
   describe 'from' do
     it "transfers attributes, given the two names" do
       Person.create(:name => 'my first name')

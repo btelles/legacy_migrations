@@ -1,7 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'spec_helper.rb'))
 
 describe LegacyMigrations do
-  require 'ruby-debug'
   describe 'transfer_from' do
     it "accepts a limit to the number of transfers to conduct" do
       3.times {|a| Person.create(:name => 'my first name') }
