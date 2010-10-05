@@ -5,6 +5,13 @@ require 'legacy_migrations/source_iterators'
 require 'legacy_migrations/row_matchers'
 module LegacyMigrations
 
+  def self.included(base)
+    [LegacyMigrations::Transformations,
+     LegacyMigrations::SourceIterators,
+     LegacyMigrations::RowMatchers].each do |mod|
+       base.send(:include, mod)
+    end
+  end
   # Define a source and destination table to transfer data
   #
   # ==== Options
@@ -198,7 +205,3 @@ module LegacyMigrations
 
 end
 include LegacyMigrations
-include LegacyMigrations::Transformations
-include LegacyMigrations::SourceIterators
-include LegacyMigrations::RowMatchers
-
