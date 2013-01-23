@@ -2,6 +2,7 @@ require 'legacy_migrations/transformations'
 require 'legacy_migrations/future_storage'
 require 'legacy_migrations/squirrel'
 require 'legacy_migrations/source_iterators'
+require 'legacy_migrations/status_report'
 require 'legacy_migrations/row_matchers'
 module LegacyMigrations
 
